@@ -4,34 +4,34 @@ provider "aws" {
 }
 
 # Create a VPC to launch our instances into
-resource "aws_vpc" "default" {
+resource "aws_vpc" "testing_terraform" {
   cidr_block = "10.0.0.0/16"
 }
 
 # Create an internet gateway to give our subnet access to the outside world
 resource "aws_internet_gateway" "default" {
-  vpc_id = "${aws_vpc.default.id}"
+  vpc_id = "${aws_vpc.testing_terraform.id}"
 }
 
 # Grant the VPC internet access on its main route table
 resource "aws_route" "internet_access" {
-  route_table_id         = "${aws_vpc.default.main_route_table_id}"
+  route_table_id         = "${aws_vpc.testing_terraform.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.default.id}"
 }
 
 # Create a subnet to launch our instances into
 resource "aws_subnet" "default" {
-  vpc_id                  = "${aws_vpc.default.id}"
+  vpc_id                  = "${aws_vpc.testing_terraform.id}"
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
 }
 
 # A security group for the ELB so it is accessible via the web
 resource "aws_security_group" "elb" {
-  name        = "terraform_example_elb"
+  name        = "testing_terraform_elb"
   description = "Used in the terraform"
-  vpc_id      = "${aws_vpc.default.id}"
+  vpc_id      = "${aws_vpc.testing_terraform.id}"
 
   # HTTP access from anywhere
   ingress {
@@ -53,9 +53,9 @@ resource "aws_security_group" "elb" {
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
-  name        = "terraform_example"
+  name        = "testing_terraform"
   description = "Used in the terraform"
-  vpc_id      = "${aws_vpc.default.id}"
+  vpc_id      = "${aws_vpc.testing_terraform.id}"
 
   # SSH access from anywhere
   ingress {
@@ -83,7 +83,7 @@ resource "aws_security_group" "default" {
 }
 
 resource "aws_elb" "web" {
-  name = "terraform-example-elb"
+  name = "testing-terraform-elb"
 
   subnets         = ["${aws_subnet.default.id}"]
   security_groups = ["${aws_security_group.elb.id}"]
@@ -113,7 +113,7 @@ resource "aws_instance" "web" {
   # we specified
   ami = "${lookup(var.aws_amis, var.aws_region)}"
 
-  # The name of our SSH keypair we created above.
+  # The name of our SSH keypair.
   key_name = "${var.key_name}"
 
   # Our Security group to allow HTTP and SSH access
