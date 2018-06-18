@@ -97,11 +97,6 @@ resource "aws_elb" "web" {
   }
 }
 
-resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
-  public_key = "${file(var.public_key_path)}"
-}
-
 resource "aws_instance" "web" {
   # The connection block tells our provisioner how to
   # communicate with the resource (instance)
@@ -119,7 +114,7 @@ resource "aws_instance" "web" {
   ami = "${lookup(var.aws_amis, var.aws_region)}"
 
   # The name of our SSH keypair we created above.
-  key_name = "${aws_key_pair.auth.id}"
+  key_name = "${var.key_name}"
 
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
