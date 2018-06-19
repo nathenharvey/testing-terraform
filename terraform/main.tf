@@ -119,11 +119,16 @@ resource "aws_elb" "web" {
 }
 
 resource "aws_instance" "web" {
+  count         = 3
   instance_type = "t2.micro"
 
   # Lookup the correct AMI based on the region
   # we specified
   ami = "${lookup(var.aws_amis, var.aws_region)}"
+
+  root_block_device {
+    delete_on_termination = true
+  }
 
   # The name of our SSH keypair.
   key_name = "${var.key_name}"
@@ -140,6 +145,7 @@ resource "aws_instance" "web" {
   subnet_id = "${aws_subnet.default.id}"
 
   tags {
+    Name          = "Testing Terraform - web-${count.index}"
     X-TTL         = "2018-06-19"
     X-Dept        = "Community Engineering"
     X-Application = "Testing Terraform"
