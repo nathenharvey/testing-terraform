@@ -25,7 +25,11 @@ variable "vpc_cidr" {
 }
 
 variable "ssh_cidrs" {
-  default = ["173.239.212.22/32"]
+  default = [
+    "173.239.212.22/32",
+    "12.130.117.75/32",
+    "0.0.0.0/0"
+  ]
 }
 
 # Ubuntu Xenial 16.04 LTS (x64)
