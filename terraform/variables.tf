@@ -11,7 +11,7 @@ DESCRIPTION
 }
 
 variable "key_name" {
-  default     = "nathenharvey-community.pem"
+  default     = "nathenharvey-community"
   description = "Desired name of AWS key pair"
 }
 
