@@ -10,7 +10,7 @@ control 'Make sure unrestricted SSH is not permitted' do
   end
 end
 
-control "The only world-open security groups should be on the ELB" do
+control 'The only world-open security groups should be on the ELB' do
   elb_sg_ids = aws_elbs.security_group_ids
   aws_security_groups.group_ids.each do |sg_id|
     sg = aws_security_group(sg_id)
