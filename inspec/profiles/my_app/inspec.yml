@@ -1,0 +1,8 @@
+name: my_app
+title: InSpec Profile to test my applicaiton setup
+maintainer: Nathen Harvey <nathen.harvey@gmail.com>
+copyright: Chef Software, Inc.
+copyright_email: nharvey@chef.io
+license: Apache-2.0
+summary: An InSpec Compliance Profile for validating AWS
+version: 0.1.0
