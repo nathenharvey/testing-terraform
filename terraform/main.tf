@@ -123,28 +123,18 @@ resource "aws_elb" "web" {
 resource "aws_instance" "web" {
   count         = 3
   instance_type = "t2.micro"
+  ami           = "${lookup(var.aws_amis, var.aws_region)}"
+  key_name      = "${var.key_name}"
+  subnet_id     = "${aws_subnet.default.id}"
 
-  # Lookup the correct AMI based on the region
-  # we specified
-  ami = "${lookup(var.aws_amis, var.aws_region)}"
-
-  root_block_device {
-    delete_on_termination = true
-  }
-
-  # The name of our SSH keypair.
-  key_name = "${var.key_name}"
-
-  # Our Security groups to allow HTTP and SSH access
   vpc_security_group_ids = [
     "${aws_security_group.lb_to_webservers.id}",
     "${aws_security_group.ssh_from_office.id}",
   ]
 
-  # We're going to launch into the same subnet as our ELB. In a production
-  # environment it's more common to have a separate private subnet for
-  # backend instances.
-  subnet_id = "${aws_subnet.default.id}"
+  root_block_device {
+    delete_on_termination = true
+  }
 
   tags {
     Name          = "Testing Terraform - web-${count.index}"
@@ -154,18 +144,10 @@ resource "aws_instance" "web" {
     X-Contact     = "nharvey"
   }
 
-  # The connection block tells our provisioner how to
-  # communicate with the resource (instance)
   connection {
-    # The default username for our AMI
     user = "ubuntu"
-
-    # The connection will use the local SSH agent for authentication.
   }
 
-  # We run a remote provisioner on the instance after creating it.
-  # In this case, we just install nginx and start it. By default,
-  # this should be on port 80
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get -y update",
