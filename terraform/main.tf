@@ -103,12 +103,14 @@ resource "aws_security_group" "ssh_from_office" {
 resource "aws_elb" "web" {
   name = "testing-terraform-elb"
 
-  subnets         = ["${aws_subnet.default.id}"]
+  subnets = ["${aws_subnet.default.id}"]
+
   security_groups = [
+    "${aws_security_group.world_to_elb.id}",
     "${aws_security_group.lb_to_webservers.id}",
-    "${aws_security_group.world_to_elb.id}"
   ]
-  instances       = ["${aws_instance.web.id}"]
+
+  instances = ["${aws_instance.web.*.id}"]
 
   listener {
     instance_port     = 80
